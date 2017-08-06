@@ -1,8 +1,11 @@
 ﻿using AzureTraining.Models;
 using EmpDetails;
+using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Blob;
+using Microsoft.WindowsAzure.Storage.Queue;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
@@ -52,6 +55,22 @@ namespace AzureTraining.Controllers
             }
             //Ends Here 
             #endregion
+
+            //Que Storeage executio
+            #region Azure web jobs
+            CloudStorageAccount storageAccount = CloudStorageAccount.Parse(ConfigurationManager.AppSettings["empstorage"]);
+            // Create the queue client
+            CloudQueueClient queueclinet = storageAccount.CreateCloudQueueClient();
+
+            // Retrieve a reference to queue 
+            CloudQueue queue = queueclinet.GetQueueReference("quwuw");
+            //Create the Queue if it doesn't already exist.
+
+            queue.CreateIfNotExists();
+            CloudQueueMessage message = new CloudQueueMessage(profileBlob.Name);
+            queue.AddMessage(message);
+            #endregion
+
 
             #region Save Information in Table Storage
             //Step 2: Save the Information in the Table Storage
